@@ -1,0 +1,49 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+    - main
+    workflow_dispatch: 
+
+jobs:
+  build:
+    runs_on: ubuntu-latest
+    permissions:
+      contents: read
+  
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+        
+      - name: Build
+        run: dotnet publish -c Release --environment linux-x64 -o ${{ env.DOTNET_ROOT }}/app
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with: 
+          name: app
+          path: ${{ env.DOTNET_ROOT }}/app
+
+  deploy:
+    runs_on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with: 
+          name: app
+      - name: login to azure
+        uses: azure/login@v2
+        with: 
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v3
+        with: 
+          app-name: 'alidoapp2'
+          slot-name: 'Production'
+          package: .
