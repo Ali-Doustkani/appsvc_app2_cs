@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read
   
@@ -30,7 +30,7 @@ jobs:
           path: ${{ env.DOTNET_ROOT }}/app
 
   deploy:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Download Artifact
