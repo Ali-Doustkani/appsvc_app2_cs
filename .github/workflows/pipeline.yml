@@ -21,6 +21,9 @@ jobs:
           dotnet-version: '9.x'
         
       - name: Build
+        run: dotnet build -c Release
+
+      - name: dotnet publish
         run: dotnet publish -c Release --runtime linux-x64 -o ${{ env.DOTNET_ROOT }}/app
 
       - name: Publish Artifact
